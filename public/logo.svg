@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="512" height="512" rx="128" fill="url(#bg-gradient)" />
+  
+  <g transform="translate(106, 106) scale(12.5)">
+    <path d="M12.0002 2.5L2.50024 8L12.0002 13.5L21.5002 8L12.0002 2.5Z" fill="white" fill-opacity="0.9"/>
+    <path d="M2.50024 11L12.0002 16.5L21.5002 11L12.0002 16.5V21.5L2.50024 16V11Z" fill="white" fill-opacity="0.5"/>
+    <path d="M12.0002 16.5V21.5L21.5002 16V11L12.0002 16.5Z" fill="white" fill-opacity="0.7"/>
+  </g>
+</svg>
