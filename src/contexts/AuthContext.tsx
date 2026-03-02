@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi } from '@/lib/api';
+import { connectSocket, disconnectSocket } from '@/lib/socket';
 
 interface User {
   id: number;
@@ -13,6 +14,8 @@ interface User {
   city: string | null;
   bio: string | null;
   isPhoneVerified: boolean;
+  isOnline?: boolean;
+  lastSeen?: string | null;
   createdAt: string;
   kyc?: {
     status: string;
@@ -51,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then((res) => {
           setUser(res.data);
           localStorage.setItem('user', JSON.stringify(res.data));
+          connectSocket();
         })
         .catch(() => {
           localStorage.removeItem('token');
@@ -71,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
+    connectSocket();
   };
 
   const adminLogin = async (email: string, password: string) => {
@@ -80,9 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
+    connectSocket();
   };
 
   const logout = () => {
+    disconnectSocket();
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');

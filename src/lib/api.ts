@@ -87,6 +87,10 @@ export const usersApi = {
     api.post('/users/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+
+  getPublicProfile: (userId: number) => api.get(`/users/${userId}/public`),
+
+  getOnlineUsers: () => api.get('/users/online/status'),
 };
 
 // ===== KYC API =====
@@ -114,6 +118,117 @@ export const whatsappApi = {
   disconnect: () => api.post('/admin/whatsapp/disconnect'),
   sendMessage: (phone: string, message: string) =>
     api.post('/admin/whatsapp/send', { phone, message }),
+};
+
+// ===== Categories API =====
+export const categoriesApi = {
+  getActive: () => api.get('/categories'),
+  getAll: () => api.get('/categories/admin/all'),
+  getOne: (id: number) => api.get(`/categories/${id}`),
+  create: (data: { name: string; description?: string; icon?: string; sortOrder?: number; isActive?: boolean }) =>
+    api.post('/categories', data),
+  update: (id: number, data: any) => api.patch(`/categories/${id}`, data),
+  delete: (id: number) => api.delete(`/categories/${id}`),
+};
+
+// ===== Services API =====
+export const servicesApi = {
+  // عامة
+  getPublic: (categoryId?: number) =>
+    api.get('/services', { params: categoryId ? { categoryId } : {} }),
+  getOnePublic: (id: number) => api.get(`/services/details/${id}`),
+  getSellerPublic: (sellerId: number) => api.get(`/services/seller/${sellerId}/public`),
+  // البائع
+  getMy: () => api.get('/services/seller/my'),
+  getMyStats: () => api.get('/services/seller/stats'),
+  getOne: (id: number) => api.get(`/services/seller/${id}`),
+  create: (formData: FormData) =>
+    api.post('/services/seller', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  update: (id: number, formData: FormData) =>
+    api.patch(`/services/seller/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  remove: (id: number) => api.delete(`/services/seller/${id}`),
+  // أدمن
+  adminGetAll: (params?: { status?: string }) =>
+    api.get('/services/admin/all', { params }),
+  adminReview: (id: number, data: { action: string; rejectionReason?: string }) =>
+    api.post(`/services/admin/${id}/review`, data),
+};
+
+// ===== Orders API =====
+export const ordersApi = {
+  create: (data: any) => api.post('/orders', data),
+  getByBuyer: () => api.get('/orders/buyer'),
+  getBySeller: () => api.get('/orders/seller'),
+  getOne: (id: number) => api.get(`/orders/${id}`),
+  updateStatus: (id: number, data: { status: string; cancelReason?: string }) =>
+    api.patch(`/orders/${id}/status`, data),
+  getAllAdmin: () => api.get('/orders/admin/all'),
+  getAdminStats: () => api.get('/orders/admin/stats'),
+};
+
+// ===== Reviews API =====
+export const reviewsApi = {
+  getByService: (serviceId: number) => api.get(`/reviews/service/${serviceId}`),
+  getSummary: (serviceId: number) => api.get(`/reviews/service/${serviceId}/summary`),
+  create: (data: { orderId: number; rating: number; comment?: string }) =>
+    api.post('/reviews', data),
+};
+
+// ===== Wallet API =====
+export const walletApi = {
+  getMyWallet: () => api.get('/wallet'),
+  getMyTransactions: () => api.get('/wallet/transactions'),
+  requestWithdrawal: (data: { amount: number }) => api.post('/wallet/withdraw', data),
+  getAdminStats: () => api.get('/wallet/admin/stats'),
+  adminGetAll: () => api.get('/wallet/admin/all'),
+  adminGetUserWallet: (userId: number) => api.get(`/wallet/admin/user/${userId}`),
+  adminGetUserTransactions: (userId: number) => api.get(`/wallet/admin/user/${userId}/transactions`),
+  adminDeposit: (data: { userId: number; amount: number; description?: string }) =>
+    api.post('/wallet/admin/deposit', data),
+  adminDeduct: (data: { userId: number; amount: number; description?: string }) =>
+    api.post('/wallet/admin/deduct', data),
+};
+
+// ===== Settings API =====
+export const settingsApi = {
+  getPublic: () => api.get('/settings/public'),
+  getAll: () => api.get('/settings/admin'),
+  updateMany: (settings: Record<string, string>) =>
+    api.patch('/settings/admin', { settings }),
+};
+
+// ===== Chat API =====
+export const chatApi = {
+  startConversation: (data: { sellerId: number; serviceId?: number; message: string }) =>
+    api.post('/chat/start', data),
+  getConversations: () => api.get('/chat/conversations'),
+  getMessages: (conversationId: number) => api.get(`/chat/conversations/${conversationId}/messages`),
+  markAsRead: (conversationId: number) => api.post(`/chat/conversations/${conversationId}/read`),
+  getUnreadCount: () => api.get('/chat/unread-count'),
+  // أدمن
+  adminGetAll: () => api.get('/chat/admin/all'),
+  adminGetMessages: (conversationId: number) => api.get(`/chat/admin/${conversationId}/messages`),
+};
+
+// ===== Notifications API =====
+export const notificationsApi = {
+  getAll: () => api.get('/notifications'),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  markAsRead: (id: number) => api.post(`/notifications/${id}/read`),
+  markAllAsRead: () => api.post('/notifications/read-all'),
+};
+
+// ===== Favorites API =====
+export const favoritesApi = {
+  toggle: (serviceId: number) => api.post(`/favorites/${serviceId}`),
+  getAll: () => api.get('/favorites'),
+  check: (serviceId: number) => api.get(`/favorites/check/${serviceId}`),
+  checkMany: (serviceIds: number[]) =>
+    api.post('/favorites/check-many', { serviceIds }),
 };
 
 export default api;

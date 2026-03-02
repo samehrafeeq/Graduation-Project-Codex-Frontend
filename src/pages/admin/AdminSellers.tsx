@@ -73,29 +73,29 @@ const AdminSellers = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">نشط</Badge>;
+        return <Badge className="bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/10">نشط</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/20">بانتظار الموافقة</Badge>;
+        return <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 hover:bg-yellow-500/10">بانتظار الموافقة</Badge>;
       case 'rejected':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/20">مرفوض</Badge>;
+        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/10">مرفوض</Badge>;
       case 'suspended':
-        return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/20">معلّق</Badge>;
+        return <Badge className="bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/10">معلّق</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const getKycBadge = (kycStatus?: string) => {
-    if (!kycStatus) return <Badge variant="outline" className="text-gray-500 border-gray-600">لم يُقدَّم</Badge>;
+    if (!kycStatus) return <Badge variant="outline" className="text-muted-foreground border-border">لم يُقدَّم</Badge>;
     switch (kycStatus) {
       case 'verified':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">✓ محقق</Badge>;
+        return <Badge className="bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/10">✓ محقق</Badge>;
       case 'pending':
-        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/20">قيد المراجعة</Badge>;
+        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/10">قيد المراجعة</Badge>;
       case 'rejected':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/20">مرفوض</Badge>;
+        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/10">مرفوض</Badge>;
       default:
-        return <Badge variant="outline" className="text-gray-500 border-gray-600">{kycStatus}</Badge>;
+        return <Badge variant="outline" className="text-muted-foreground border-border">{kycStatus}</Badge>;
     }
   };
 
@@ -125,7 +125,7 @@ const AdminSellers = () => {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </AdminLayout>
     );
@@ -135,17 +135,17 @@ const AdminSellers = () => {
     <AdminLayout>
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">إدارة البائعين</h1>
-          <p className="text-gray-400 mt-1">مراجعة وإدارة حسابات البائعين</p>
+          <h1 className="text-2xl font-bold text-foreground">إدارة البائعين</h1>
+          <p className="text-muted-foreground mt-1">مراجعة وإدارة حسابات البائعين</p>
         </div>
 
         {/* Filter Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="bg-gray-800 border border-gray-700">
-            <TabsTrigger value="all" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+          <TabsList className="bg-accent/50">
+            <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-white">
               الكل ({counts.all})
             </TabsTrigger>
-            <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-600 data-[state=active]:text-white">
+            <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-white">
               بانتظار ({counts.pending})
             </TabsTrigger>
             <TabsTrigger value="active" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
@@ -160,29 +160,29 @@ const AdminSellers = () => {
         {/* Sellers List */}
         <div className="space-y-4">
           {filteredSellers.length === 0 ? (
-            <Card className="border-0 bg-gray-800/50">
+            <Card className="bg-white shadow-sm ring-1 ring-black/[0.04]">
               <CardContent className="p-12 text-center">
-                <User size={48} className="mx-auto text-gray-600 mb-4" />
-                <p className="text-gray-400">لا يوجد بائعين في هذا التصنيف</p>
+                <User size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+                <p className="text-muted-foreground">لا يوجد بائعين في هذا التصنيف</p>
               </CardContent>
             </Card>
           ) : (
             filteredSellers.map((seller) => (
-              <Card key={seller.id} className="border border-gray-700/50 bg-gray-800/50 hover:bg-gray-800 transition-colors">
+              <Card key={seller.id} className="bg-white shadow-sm ring-1 ring-black/[0.04] hover:bg-accent/30 transition-colors">
                 <CardContent className="p-5">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     {/* Seller Info */}
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 shrink-0 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-lg">
+                      <div className="w-12 h-12 shrink-0 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-lg">
                         {seller.name?.charAt(0) || '؟'}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-white truncate">{seller.name}</h3>
+                        <h3 className="font-bold text-foreground truncate">{seller.name}</h3>
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                          <span className="text-sm text-gray-400 flex items-center gap-1 truncate">
+                          <span className="text-sm text-muted-foreground flex items-center gap-1 truncate">
                             <Mail size={13} className="shrink-0" /> {seller.email}
                           </span>
-                          <span className="text-sm text-gray-400 flex items-center gap-1" dir="ltr">
+                          <span className="text-sm text-muted-foreground flex items-center gap-1" dir="ltr">
                             <Phone size={13} className="shrink-0" /> {seller.phone}
                           </span>
                         </div>
@@ -197,7 +197,7 @@ const AdminSellers = () => {
                     <div className="flex items-center gap-2 shrink-0">
                       <Button
                         size="sm"
-                        className="rounded-lg bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/40 hover:text-white"
+                        className="rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20"
                         onClick={() => setSelectedSeller(seller)}
                       >
                         <Eye size={15} className="ml-1" />
@@ -237,20 +237,20 @@ const AdminSellers = () => {
 
         {/* Seller Detail Dialog */}
         <Dialog open={!!selectedSeller} onOpenChange={() => setSelectedSeller(null)}>
-          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl">تفاصيل البائع</DialogTitle>
             </DialogHeader>
             {selectedSeller && (
               <div className="space-y-6">
                 {/* Profile Header */}
-                <div className="flex items-center gap-4 bg-gray-800 rounded-xl p-4">
-                  <div className="w-16 h-16 rounded-full bg-indigo-600/20 border-2 border-indigo-500/40 flex items-center justify-center text-indigo-400 text-2xl font-bold shrink-0">
+                <div className="flex items-center gap-4 bg-accent/30 rounded-xl p-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary text-2xl font-bold shrink-0">
                     {selectedSeller.name?.charAt(0)}
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="text-lg font-bold truncate">{selectedSeller.name}</h3>
-                    <p className="text-gray-400 text-sm truncate">{selectedSeller.email}</p>
+                    <p className="text-muted-foreground text-sm truncate">{selectedSeller.email}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {getStatusBadge(selectedSeller.status)}
                       {getKycBadge(selectedSeller.kyc?.status)}
@@ -260,34 +260,34 @@ const AdminSellers = () => {
 
                 {/* Info Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-gray-800 rounded-lg p-3 flex items-center gap-3">
-                    <Mail size={18} className="text-gray-500 shrink-0" />
+                  <div className="bg-accent/30 rounded-lg p-3 flex items-center gap-3">
+                    <Mail size={18} className="text-muted-foreground shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500">البريد الإلكتروني</p>
-                      <p className="text-sm text-white truncate">{selectedSeller.email}</p>
+                      <p className="text-xs text-muted-foreground">البريد الإلكتروني</p>
+                      <p className="text-sm text-foreground truncate">{selectedSeller.email}</p>
                     </div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-3 flex items-center gap-3">
-                    <Phone size={18} className="text-gray-500 shrink-0" />
+                  <div className="bg-accent/30 rounded-lg p-3 flex items-center gap-3">
+                    <Phone size={18} className="text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-500">رقم الهاتف</p>
-                      <p className="text-sm text-white" dir="ltr">{selectedSeller.phone}</p>
+                      <p className="text-xs text-muted-foreground">رقم الهاتف</p>
+                      <p className="text-sm text-foreground" dir="ltr">{selectedSeller.phone}</p>
                     </div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-3 flex items-center gap-3">
-                    <Shield size={18} className="text-gray-500 shrink-0" />
+                  <div className="bg-accent/30 rounded-lg p-3 flex items-center gap-3">
+                    <Shield size={18} className="text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-500">تحقق الهاتف</p>
+                      <p className="text-xs text-muted-foreground">تحقق الهاتف</p>
                       <p className={`text-sm ${selectedSeller.isPhoneVerified ? 'text-green-400' : 'text-yellow-400'}`}>
                         {selectedSeller.isPhoneVerified ? 'محقق ✓' : 'غير محقق'}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-gray-800 rounded-lg p-3 flex items-center gap-3">
-                    <Calendar size={18} className="text-gray-500 shrink-0" />
+                  <div className="bg-accent/30 rounded-lg p-3 flex items-center gap-3">
+                    <Calendar size={18} className="text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-500">تاريخ التسجيل</p>
-                      <p className="text-sm text-white">{new Date(selectedSeller.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                      <p className="text-xs text-muted-foreground">تاريخ التسجيل</p>
+                      <p className="text-sm text-foreground">{new Date(selectedSeller.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     </div>
                   </div>
                 </div>
@@ -295,8 +295,8 @@ const AdminSellers = () => {
                 {/* KYC Documents */}
                 {selectedSeller.kyc && (
                   <div className="space-y-4">
-                    <h4 className="font-bold text-white flex items-center gap-2">
-                      <Shield size={18} className="text-indigo-400" />
+                    <h4 className="font-bold text-foreground flex items-center gap-2">
+                      <Shield size={18} className="text-primary" />
                       مستندات التحقق (KYC)
                     </h4>
 
@@ -310,12 +310,12 @@ const AdminSellers = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* ID Document */}
                       <div className="space-y-2">
-                        <p className="text-sm text-gray-400 flex items-center gap-1">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <ImageIcon size={14} /> صورة إثبات الهوية
                         </p>
                         {selectedSeller.kyc.idDocumentFront ? (
                           <div
-                            className="relative rounded-lg overflow-hidden border border-gray-700 cursor-pointer group h-44"
+                            className="relative rounded-lg overflow-hidden border border-border cursor-pointer group h-44"
                             onClick={() => setPreviewImage(getUploadUrl(selectedSeller.kyc.idDocumentFront))}
                           >
                             <img
@@ -328,7 +328,7 @@ const AdminSellers = () => {
                             </div>
                           </div>
                         ) : (
-                          <div className="h-44 rounded-lg border border-gray-700 border-dashed flex items-center justify-center text-gray-600">
+                          <div className="h-44 rounded-lg border border-border border-dashed flex items-center justify-center text-muted-foreground">
                             <p className="text-sm">لم يتم الرفع</p>
                           </div>
                         )}
@@ -336,12 +336,12 @@ const AdminSellers = () => {
 
                       {/* Selfie */}
                       <div className="space-y-2">
-                        <p className="text-sm text-gray-400 flex items-center gap-1">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <ImageIcon size={14} /> صورة السيلفي
                         </p>
                         {selectedSeller.kyc.selfieImage ? (
                           <div
-                            className="relative rounded-lg overflow-hidden border border-gray-700 cursor-pointer group h-44"
+                            className="relative rounded-lg overflow-hidden border border-border cursor-pointer group h-44"
                             onClick={() => setPreviewImage(getUploadUrl(selectedSeller.kyc.selfieImage))}
                           >
                             <img
@@ -354,7 +354,7 @@ const AdminSellers = () => {
                             </div>
                           </div>
                         ) : (
-                          <div className="h-44 rounded-lg border border-gray-700 border-dashed flex items-center justify-center text-gray-600">
+                          <div className="h-44 rounded-lg border border-border border-dashed flex items-center justify-center text-muted-foreground">
                             <p className="text-sm">لم يتم الرفع</p>
                           </div>
                         )}
@@ -365,7 +365,7 @@ const AdminSellers = () => {
 
                 {/* Action Buttons */}
                 {selectedSeller.status === 'pending' && (
-                  <div className="flex gap-3 pt-2 border-t border-gray-700">
+                  <div className="flex gap-3 pt-2 border-t border-border">
                     <Button
                       className="flex-1 bg-green-600 hover:bg-green-500 text-white rounded-lg h-11"
                       onClick={() => handleApprove(selectedSeller.id)}
@@ -412,23 +412,22 @@ const AdminSellers = () => {
 
         {/* Reject Dialog */}
         <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-          <DialogContent className="bg-gray-900 border-gray-700 text-white">
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>رفض حساب البائع</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-gray-400 text-sm">يرجى كتابة سبب الرفض ليتم إرساله للبائع:</p>
+              <p className="text-muted-foreground text-sm">يرجى كتابة سبب الرفض ليتم إرساله للبائع:</p>
               <Textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="سبب الرفض..."
-                className="bg-gray-800 border-gray-700 text-white min-h-[100px]"
+                className="min-h-[100px]"
               />
               <div className="flex gap-2 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => setShowRejectDialog(false)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800"
                 >
                   إلغاء
                 </Button>
