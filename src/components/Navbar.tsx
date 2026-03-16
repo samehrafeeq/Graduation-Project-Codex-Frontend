@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUiPreferences } from "@/contexts/UiPreferencesContext";
+import ThemeLanguageSwitcher from "@/components/ThemeLanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +19,21 @@ const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://lo
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { isArabic } = useUiPreferences();
   const navigate = useNavigate();
+
+  const text = {
+    home: isArabic ? 'الرئيسية' : 'Home',
+    browse: isArabic ? 'تصفح الخدمات' : 'Browse Services',
+    categories: isArabic ? 'التصنيفات' : 'Categories',
+    howItWorks: isArabic ? 'كيف تعمل' : 'How It Works',
+    dashboard: isArabic ? 'لوحة التحكم' : 'Dashboard',
+    profile: isArabic ? 'حسابي' : 'My Account',
+    adminPanel: isArabic ? 'لوحة الإدارة' : 'Admin Panel',
+    logout: isArabic ? 'تسجيل الخروج' : 'Logout',
+    login: isArabic ? 'تسجيل الدخول' : 'Login',
+    createAccount: isArabic ? 'إنشاء حساب' : 'Create Account',
+  };
 
   const handleLogout = () => {
     logout();
@@ -36,19 +52,20 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/" className="text-sm font-medium text-primary">الرئيسية</Link>
-          <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">تصفح الخدمات</Link>
-          <a href="#services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">التصنيفات</a>
-          <a href="#steps" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">كيف تعمل</a>
+          <Link to="/" className="text-sm font-medium text-primary">{text.home}</Link>
+          <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{text.browse}</Link>
+          <a href="#services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{text.categories}</a>
+          <a href="#steps" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{text.howItWorks}</a>
         </div>
 
         {user ? (
           /* === Authenticated user === */
           <div className="hidden md:flex items-center gap-3">
+            <ThemeLanguageSwitcher compact />
             <Link to={dashboardPath}>
               <Button variant="ghost" size="sm" className="gap-2 text-sm">
                 <LayoutDashboard className="h-4 w-4" />
-                لوحة التحكم
+                {text.dashboard}
               </Button>
             </Link>
 
@@ -72,18 +89,18 @@ const Navbar = () => {
               <DropdownMenuContent align="start" className="w-48">
                 <DropdownMenuItem onClick={() => navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard/profile')} className="gap-2 cursor-pointer">
                   <User className="h-4 w-4" />
-                  حسابي
+                  {text.profile}
                 </DropdownMenuItem>
                 {user.role === 'admin' && (
                   <DropdownMenuItem onClick={() => navigate('/admin/dashboard')} className="gap-2 cursor-pointer">
                     <Shield className="h-4 w-4" />
-                    لوحة الإدارة
+                    {text.adminPanel}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="h-4 w-4" />
-                  تسجيل الخروج
+                  {text.logout}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -91,12 +108,13 @@ const Navbar = () => {
         ) : (
           /* === Guest === */
           <div className="hidden md:flex items-center gap-4">
+            <ThemeLanguageSwitcher compact />
             <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              تسجيل الدخول
+              {text.login}
             </Link>
             <Link to="/register">
               <Button className="bg-gradient-to-l from-primary to-secondary text-primary-foreground rounded-full px-6 hover:opacity-90 transition-opacity">
-                إنشاء حساب
+                {text.createAccount}
               </Button>
             </Link>
           </div>
@@ -111,10 +129,11 @@ const Navbar = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-background border-t border-border p-4 flex flex-col gap-4">
-          <Link to="/" className="text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>الرئيسية</Link>
-          <Link to="/services" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>تصفح الخدمات</Link>
-          <a href="#services" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>التصنيفات</a>
-          <a href="#steps" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>كيف تعمل</a>
+          <ThemeLanguageSwitcher compact />
+          <Link to="/" className="text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>{text.home}</Link>
+          <Link to="/services" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>{text.browse}</Link>
+          <a href="#services" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>{text.categories}</a>
+          <a href="#steps" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>{text.howItWorks}</a>
 
           <div className="border-t border-border pt-3 mt-1">
             {user ? (
@@ -142,21 +161,21 @@ const Navbar = () => {
                   onClick={() => setMobileOpen(false)}
                 >
                   <LayoutDashboard className="h-4 w-4" />
-                  لوحة التحكم
+                  {text.dashboard}
                 </Link>
                 <button
                   onClick={() => { handleLogout(); setMobileOpen(false); }}
                   className="flex items-center gap-2 text-sm font-medium text-destructive hover:text-destructive/80 py-2 w-full"
                 >
                   <LogOut className="h-4 w-4" />
-                  تسجيل الخروج
+                  {text.logout}
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>تسجيل الدخول</Link>
+                <Link to="/login" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>{text.login}</Link>
                 <Link to="/register" onClick={() => setMobileOpen(false)}>
-                  <Button className="bg-gradient-to-l from-primary to-secondary text-primary-foreground rounded-full w-full mt-2">إنشاء حساب</Button>
+                  <Button className="bg-gradient-to-l from-primary to-secondary text-primary-foreground rounded-full w-full mt-2">{text.createAccount}</Button>
                 </Link>
               </>
             )}

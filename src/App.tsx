@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { UiPreferencesProvider } from "@/contexts/UiPreferencesContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GuestRoute from "@/components/GuestRoute";
 import Index from "./pages/Index";
@@ -26,6 +27,11 @@ import BuyerOrders from "./pages/dashboard/BuyerOrders";
 import OrderDetail from "./pages/dashboard/OrderDetail";
 import ChatPage from "./pages/dashboard/ChatPage";
 import FavoritesPage from "./pages/dashboard/FavoritesPage";
+import SupportTicketsPage from "./pages/dashboard/SupportTicketsPage";
+import AISupportChatPage from "./pages/dashboard/AISupportChatPage";
+import MissingServiceRequestsPage from "./pages/dashboard/MissingServiceRequestsPage";
+import NewMissingServiceRequestPage from "./pages/dashboard/NewMissingServiceRequestPage";
+import SellerMissingServiceRequestReplyPage from "./pages/dashboard/SellerMissingServiceRequestReplyPage";
 import DashboardLayout from "./components/DashboardLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -37,17 +43,21 @@ import AdminServicesReview from "./pages/admin/AdminServicesReview";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminWallet from "./pages/admin/AdminWallet";
+import AdminSupportTickets from "./pages/admin/AdminSupportTickets";
+import AdminMissingServiceRequests from "./pages/admin/AdminMissingServiceRequests";
+import AdminPaymentMethods from "./pages/admin/AdminPaymentMethods";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+    <BrowserRouter>
+      <UiPreferencesProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
             <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
@@ -176,6 +186,47 @@ const App = () => (
               }
             />
 
+            <Route
+              path="/dashboard/support"
+              element={
+                <ProtectedRoute allowedRoles={['buyer', 'seller']}>
+                  <SupportTicketsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/missing-services"
+              element={
+                <ProtectedRoute allowedRoles={['buyer', 'seller']}>
+                  <MissingServiceRequestsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/missing-services/new"
+              element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <NewMissingServiceRequestPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/missing-services/:id/reply"
+              element={
+                <ProtectedRoute allowedRoles={['seller']}>
+                  <SellerMissingServiceRequestReplyPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/support/ai"
+              element={
+                <ProtectedRoute allowedRoles={['buyer', 'seller']}>
+                  <AISupportChatPage />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Admin Routes */}
             <Route path="/admin/login" element={<GuestRoute><AdminLogin /></GuestRoute>} />
             <Route
@@ -250,13 +301,38 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/payment-methods"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminPaymentMethods />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/support"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminSupportTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/missing-services"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminMissingServiceRequests />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+            </Routes>
+          </TooltipProvider>
+        </AuthProvider>
+      </UiPreferencesProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

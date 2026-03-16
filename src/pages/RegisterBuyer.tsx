@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Logo } from "@/components/Logo";
 import { authApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import ThemeLanguageSwitcher from "@/components/ThemeLanguageSwitcher";
 
 const RegisterBuyer = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +102,7 @@ const RegisterBuyer = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12 bg-gray-50/50">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12 bg-muted/30">
       {/* Background gradients */}
       <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[0%] right-[0%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[100px] pointer-events-none" />
@@ -112,16 +113,19 @@ const RegisterBuyer = () => {
           <Link to="/" className="inline-flex items-center mb-6">
             <Logo iconClassName="w-12 h-12" textClassName="text-3xl" />
           </Link>
+          <div className="flex justify-center mb-4">
+            <ThemeLanguageSwitcher compact />
+          </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">
             {step === 1 ? "إنشاء حساب مشتري" : "تأكيد رقم الهاتف"}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {step === 1 ? "انضم كمشتري وابدأ في طلب الخدمات" : "يرجى إدخال رمز التحقق المرسل إليك عبر واتساب"}
           </p>
         </div>
 
         {/* Form Card */}
-        <Card className="border-0 shadow-2xl shadow-black/5 bg-white/80 backdrop-blur-xl rounded-2xl overflow-hidden">
+        <Card className="border-0 shadow-2xl shadow-black/5 bg-card/80 backdrop-blur-xl rounded-2xl overflow-hidden">
           <CardContent className="p-8">
             {step === 1 ? (
               <form className="space-y-6" onSubmit={handleRegister}>
@@ -133,55 +137,55 @@ const RegisterBuyer = () => {
               )}
 
               {/* Mandatory Information Header */}
-              <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+              <div className="flex items-center gap-2 border-b border-border pb-2">
                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                 <h3 className="font-bold text-gray-700">البيانات الأساسية</h3>
+                 <h3 className="font-bold text-foreground">البيانات الأساسية</h3>
                  <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full mr-auto">إلزامية</span>
               </div>
 
               <div className="grid md:grid-cols-2 gap-5">
                  {/* Full Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-gray-700">الاسم الكامل</Label>
+                  <Label htmlFor="name" className="text-sm font-semibold text-foreground">الاسم الكامل</Label>
                   <div className="relative group">
-                    <User className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
-                    <Input id="name" placeholder="الاسم الكامل" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="pr-10 h-11 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl" required />
+                    <User className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                    <Input id="name" placeholder="الاسم الكامل" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="pr-10 h-11 bg-background border-input focus:bg-background focus:border-primary rounded-xl" required />
                   </div>
                 </div>
 
                 {/* Email */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-gray-700">البريد الإلكتروني</Label>
+                  <Label htmlFor="email" className="text-sm font-semibold text-foreground">البريد الإلكتروني</Label>
                   <div className="relative group">
-                    <Mail className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
-                    <Input id="email" type="email" placeholder="example@mail.com" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="pr-10 h-11 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl" required />
+                    <Mail className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                    <Input id="email" type="email" placeholder="example@mail.com" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="pr-10 h-11 bg-background border-input focus:bg-background focus:border-primary rounded-xl" required />
                   </div>
                 </div>
 
                 {/* Phone */}
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">رقم الهاتف</Label>
+                  <Label htmlFor="phone" className="text-sm font-semibold text-foreground">رقم الهاتف</Label>
                   <div className="relative group">
-                    <Phone className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
-                    <Input id="phone" type="tel" placeholder="05xxxxxxxx" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} className="pr-10 h-11 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl" required />
+                    <Phone className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                    <Input id="phone" type="tel" placeholder="05xxxxxxxx" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} className="pr-10 h-11 bg-background border-input focus:bg-background focus:border-primary rounded-xl" required />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-700">كلمة المرور</Label>
+                  <Label htmlFor="password" className="text-sm font-semibold text-foreground">كلمة المرور</Label>
                   <div className="relative group">
-                    <Lock className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
+                    <Lock className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={form.password}
                       onChange={(e) => setForm({...form, password: e.target.value})}
-                      className="pr-10 pl-10 h-11 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl"
+                      className="pr-10 pl-10 h-11 bg-background border-input focus:bg-background focus:border-primary rounded-xl"
                       required
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -189,19 +193,19 @@ const RegisterBuyer = () => {
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">تأكيد كلمة المرور</Label>
+                  <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">تأكيد كلمة المرور</Label>
                   <div className="relative group">
-                    <Lock className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
+                    <Lock className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
                     <Input
                       id="confirmPassword"
                       type={showConfirm ? "text" : "password"}
                       placeholder="••••••••"
                       value={form.confirmPassword}
                       onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
-                      className="pr-10 pl-10 h-11 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl"
+                      className="pr-10 pl-10 h-11 bg-background border-input focus:bg-background focus:border-primary rounded-xl"
                       required
                     />
-                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                       {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -209,16 +213,16 @@ const RegisterBuyer = () => {
               </div>
 
               {/* Optional Information Header */}
-              <div className="flex items-center gap-2 border-b border-gray-100 pb-2 pt-2">
+              <div className="flex items-center gap-2 border-b border-border pb-2 pt-2">
                  <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                 <h3 className="font-bold text-gray-700">بيانات إضافية</h3>
-                 <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full mr-auto">اختياري</span>
+                 <h3 className="font-bold text-foreground">بيانات إضافية</h3>
+                 <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full mr-auto">اختياري</span>
               </div>
 
               <div className="space-y-5">
                  {/* Avatar Upload */}
                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 relative overflow-hidden group hover:border-primary cursor-pointer transition-colors">
+                    <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center text-muted-foreground relative overflow-hidden group hover:border-primary cursor-pointer transition-colors">
                        {avatarPreview ? (
                          <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
                        ) : (
@@ -227,19 +231,19 @@ const RegisterBuyer = () => {
                        <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onChange={handleAvatarChange} />
                     </div>
                     <div className="flex-1">
-                       <h4 className="text-sm font-semibold text-gray-700">الصورة الشخصية</h4>
-                       <p className="text-xs text-gray-400 mt-1">عزز ملفك الشخصي بصورة احترافية. (PNG, JPG بحد أقصى 2MB)</p>
+                       <h4 className="text-sm font-semibold text-foreground">الصورة الشخصية</h4>
+                       <p className="text-xs text-muted-foreground mt-1">عزز ملفك الشخصي بصورة احترافية. (PNG, JPG بحد أقصى 2MB)</p>
                     </div>
                  </div>
 
                  <div className="grid md:grid-cols-2 gap-5">
                     {/* Country/City */}
                     <div className="space-y-2">
-                       <Label className="text-sm font-semibold text-gray-700">الدولة / المدينة</Label>
+                       <Label className="text-sm font-semibold text-foreground">الدولة / المدينة</Label>
                        <div className="relative">
-                          <MapPin className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 z-10" size={16} />
+                          <MapPin className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground z-10" size={16} />
                            <Select>
-                             <SelectTrigger className="h-11 pr-10 bg-gray-50 border-gray-200 rounded-xl focus:ring-primary">
+                             <SelectTrigger className="h-11 pr-10 bg-background border-input rounded-xl focus:ring-primary">
                                <SelectValue placeholder="اختر الدولة" />
                              </SelectTrigger>
                              <SelectContent align="end">
@@ -255,11 +259,11 @@ const RegisterBuyer = () => {
 
                     {/* Language */}
                     <div className="space-y-2">
-                       <Label className="text-sm font-semibold text-gray-700">اللغة المفضلة</Label>
+                       <Label className="text-sm font-semibold text-foreground">اللغة المفضلة</Label>
                        <div className="relative">
-                          <Globe className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 z-10" size={16} />
+                          <Globe className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground z-10" size={16} />
                            <Select>
-                             <SelectTrigger className="h-11 pr-10 bg-gray-50 border-gray-200 rounded-xl focus:ring-primary">
+                             <SelectTrigger className="h-11 pr-10 bg-background border-input rounded-xl focus:ring-primary">
                                <SelectValue placeholder="العربية" />
                              </SelectTrigger>
                              <SelectContent align="end">
@@ -273,18 +277,18 @@ const RegisterBuyer = () => {
 
                  {/* Bio */}
                  <div className="space-y-2">
-                    <Label htmlFor="bio" className="text-sm font-semibold text-gray-700">نبذة عنك</Label>
+                    <Label htmlFor="bio" className="text-sm font-semibold text-foreground">نبذة عنك</Label>
                     <div className="relative group">
-                       <FileText className="absolute top-3 right-3 text-gray-400 group-focus-within:text-primary transition-colors" size={16} />
-                       <Textarea id="bio" placeholder="أخبرنا قليلاً عن نفسك وما تبحث عنه..." className="min-h-[80px] pr-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary rounded-xl resize-none" />
+                       <FileText className="absolute top-3 right-3 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                       <Textarea id="bio" placeholder="أخبرنا قليلاً عن نفسك وما تبحث عنه..." className="min-h-[80px] pr-10 bg-background border-input focus:bg-background focus:border-primary rounded-xl resize-none" />
                     </div>
                  </div>
               </div>
 
                {/* Terms */}
-               <div className="flex items-start gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                  <Checkbox id="terms" className="rounded-[4px] border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary mt-0.5" />
-                  <label htmlFor="terms" className="text-sm text-gray-500 cursor-pointer leading-relaxed">
+               <div className="flex items-start gap-2 bg-muted/40 p-3 rounded-lg border border-border">
+                  <Checkbox id="terms" className="rounded-[4px] border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary mt-0.5" />
+                  <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer leading-relaxed">
                     أوافق على <a href="#" className="text-primary hover:underline font-bold">الشروط والأحكام</a> و <a href="#" className="text-primary hover:underline font-bold">سياسة الخصوصية</a>
                   </label>
                 </div>
@@ -301,16 +305,16 @@ const RegisterBuyer = () => {
               {/* Divider */}
               <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-100" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-white px-3 text-gray-400">أو سجل باستخدام</span>
+                  <span className="bg-card px-3 text-muted-foreground">أو سجل باستخدام</span>
                 </div>
               </div>
 
               {/* Social */}
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" type="button" className="h-11 font-medium border-gray-200 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 rounded-xl transition-all">
+                <Button variant="outline" type="button" className="h-11 font-medium border-input hover:bg-muted/40 hover:text-foreground hover:border-border rounded-xl transition-all">
                   <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -319,7 +323,7 @@ const RegisterBuyer = () => {
                   </svg>
                   Google
                 </Button>
-                <Button variant="outline" type="button" className="h-11 font-medium border-gray-200 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 rounded-xl transition-all">
+                <Button variant="outline" type="button" className="h-11 font-medium border-input hover:bg-muted/40 hover:text-foreground hover:border-border rounded-xl transition-all">
                   <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24">
                     <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                   </svg>
@@ -334,8 +338,8 @@ const RegisterBuyer = () => {
                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-2">
                       <CheckCircle2 size={32} />
                    </div>
-                   <h3 className="text-xl font-bold text-center text-gray-800">تأكيد رقم واتساب</h3>
-                   <p className="text-center text-gray-500 max-w-xs leading-relaxed">
+                   <h3 className="text-xl font-bold text-center text-foreground">تأكيد رقم واتساب</h3>
+                   <p className="text-center text-muted-foreground max-w-xs leading-relaxed">
                       تم إرسال رمز التحقق المكون من 6 أرقام إلى رقم هاتفك المسجل عبر واتساب
                    </p>
                 </div>
@@ -343,12 +347,12 @@ const RegisterBuyer = () => {
                 <div className="flex justify-center dir-ltr">
                   <InputOTP maxLength={6} value={otpCode} onChange={(val) => setOtpCode(val)}>
                     <InputOTPGroup>
-                      <InputOTPSlot index={0} className="w-12 h-12 text-lg border-gray-300" />
-                      <InputOTPSlot index={1} className="w-12 h-12 text-lg border-gray-300" />
-                      <InputOTPSlot index={2} className="w-12 h-12 text-lg border-gray-300" />
-                      <InputOTPSlot index={3} className="w-12 h-12 text-lg border-gray-300" />
-                      <InputOTPSlot index={4} className="w-12 h-12 text-lg border-gray-300" />
-                      <InputOTPSlot index={5} className="w-12 h-12 text-lg border-gray-300" />
+                      <InputOTPSlot index={0} className="w-12 h-12 text-lg border-input" />
+                      <InputOTPSlot index={1} className="w-12 h-12 text-lg border-input" />
+                      <InputOTPSlot index={2} className="w-12 h-12 text-lg border-input" />
+                      <InputOTPSlot index={3} className="w-12 h-12 text-lg border-input" />
+                      <InputOTPSlot index={4} className="w-12 h-12 text-lg border-input" />
+                      <InputOTPSlot index={5} className="w-12 h-12 text-lg border-input" />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -363,7 +367,7 @@ const RegisterBuyer = () => {
                    </Button>
                    <Button 
                      variant="ghost" 
-                     className="text-gray-500 hover:text-gray-900"
+                     className="text-muted-foreground hover:text-foreground"
                      onClick={() => setStep(1)}
                    >
                      الرجوع للتعديل
@@ -371,8 +375,8 @@ const RegisterBuyer = () => {
                 </div>
 
                 <div className="text-center text-sm">
-                   <p className="text-gray-400">لم يصلك الكود؟ {resendCooldown > 0 ? (
-                     <span className="text-gray-500">إعادة الإرسال بعد <span className="text-primary font-bold" dir="ltr">{resendCooldown}</span> ثانية</span>
+                   <p className="text-muted-foreground">لم يصلك الكود؟ {resendCooldown > 0 ? (
+                     <span className="text-muted-foreground">إعادة الإرسال بعد <span className="text-primary font-bold" dir="ltr">{resendCooldown}</span> ثانية</span>
                    ) : (
                      <button type="button" onClick={handleResendOtp} className="text-primary font-bold hover:underline">إعادة الإرسال</button>
                    )}</p>
@@ -382,7 +386,7 @@ const RegisterBuyer = () => {
 
 
             {/* Login link */}
-            <p className="text-center text-sm text-gray-500 mt-8">
+            <p className="text-center text-sm text-muted-foreground mt-8">
               لديك حساب بالفعل؟{" "}
               <Link to="/login" className="text-[#7c3aed] font-bold hover:underline transition-all">
                 تسجيل الدخول
@@ -393,7 +397,7 @@ const RegisterBuyer = () => {
 
         {/* Back to home */}
         <div className="text-center mt-8">
-          <Link to="/" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center gap-2 group">
+          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group">
             <ArrowLeft size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
             العودة لصفحة التسجيل
           </Link>

@@ -22,7 +22,11 @@ import {
   ArrowRight,
   History,
   User,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
+
+type WithdrawalStatus = 'pending' | 'approved' | 'rejected';
 
 const AdminWallet = () => {
   const [wallets, setWallets] = useState<any[]>([]);
@@ -42,10 +46,18 @@ const AdminWallet = () => {
   const [txUser, setTxUser] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [txLoading, setTxLoading] = useState(false);
+  const [withdrawalStatusFilter, setWithdrawalStatusFilter] = useState<WithdrawalStatus | 'all'>('pending');
+  const [withdrawalRequests, setWithdrawalRequests] = useState<any[]>([]);
+  const [withdrawalLoading, setWithdrawalLoading] = useState(false);
+  const [reviewingWithdrawId, setReviewingWithdrawId] = useState<number | null>(null);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    loadWithdrawalRequests();
+  }, [withdrawalStatusFilter]);
 
   const loadData = async () => {
     setLoading(true);
@@ -58,6 +70,41 @@ const AdminWallet = () => {
       setStats(statsRes.data);
     } catch {}
     setLoading(false);
+  };
+
+  const loadWithdrawalRequests = async () => {
+    setWithdrawalLoading(true);
+    try {
+      const params = withdrawalStatusFilter === 'all' ? undefined : { status: withdrawalStatusFilter };
+      const res = await walletApi.adminGetWithdrawalRequests(params);
+      setWithdrawalRequests(res.data);
+    } catch {
+      setWithdrawalRequests([]);
+    }
+    setWithdrawalLoading(false);
+  };
+
+  const reviewWithdrawal = async (requestId: number, status: 'approved' | 'rejected') => {
+    setReviewingWithdrawId(requestId);
+    try {
+      await walletApi.adminReviewWithdrawalRequest(requestId, { status });
+      await Promise.all([loadData(), loadWithdrawalRequests()]);
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'تعذر تحديث حالة طلب السحب');
+    }
+    setReviewingWithdrawId(null);
+  };
+
+  const getWithdrawalBadgeClass = (status: WithdrawalStatus) => {
+    if (status === 'approved') return 'bg-green-500/10 text-green-700 border-green-500/20 hover:bg-green-500/10';
+    if (status === 'rejected') return 'bg-red-500/10 text-red-700 border-red-500/20 hover:bg-red-500/10';
+    return 'bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/10';
+  };
+
+  const getWithdrawalStatusLabel = (status: WithdrawalStatus) => {
+    if (status === 'approved') return 'تم التنفيذ';
+    if (status === 'rejected') return 'مرفوض';
+    return 'قيد المراجعة';
   };
 
   const openModal = (user: any, type: 'deposit' | 'deduct') => {
@@ -174,6 +221,118 @@ const AdminWallet = () => {
             </Card>
           ))}
         </div>
+
+        {/* طلبات السحب */}
+        <Card className="bg-white shadow-sm ring-1 ring-black/[0.04] mb-8">
+          <div className="p-5 border-b border-border/40 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-bold text-foreground">طلبات السحب (مشتري + بائع)</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">يمكنك مراجعة كل طلب وتحديد إذا تم التحويل أم لا</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={withdrawalStatusFilter === 'pending' ? 'default' : 'outline'}
+                onClick={() => setWithdrawalStatusFilter('pending')}
+              >
+                قيد المراجعة
+              </Button>
+              <Button
+                size="sm"
+                variant={withdrawalStatusFilter === 'approved' ? 'default' : 'outline'}
+                onClick={() => setWithdrawalStatusFilter('approved')}
+              >
+                تم التنفيذ
+              </Button>
+              <Button
+                size="sm"
+                variant={withdrawalStatusFilter === 'rejected' ? 'default' : 'outline'}
+                onClick={() => setWithdrawalStatusFilter('rejected')}
+              >
+                مرفوض
+              </Button>
+              <Button
+                size="sm"
+                variant={withdrawalStatusFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setWithdrawalStatusFilter('all')}
+              >
+                الكل
+              </Button>
+            </div>
+          </div>
+
+          {withdrawalLoading ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary mx-auto mb-3"></div>
+              جارٍ تحميل طلبات السحب...
+            </div>
+          ) : withdrawalRequests.length === 0 ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">لا توجد طلبات سحب بهذه الحالة</div>
+          ) : (
+            <div className="divide-y divide-border/40">
+              {withdrawalRequests.map((req) => {
+                const status = (req.withdrawalStatus || 'pending') as WithdrawalStatus;
+                return (
+                  <div key={req.id} className="p-4 flex flex-col gap-3">
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-sm text-foreground truncate">
+                            {req.wallet?.user?.name || 'مستخدم'}
+                          </p>
+                          <Badge className={getWithdrawalBadgeClass(status)}>
+                            {getWithdrawalStatusLabel(status)}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {req.wallet?.user?.role === 'seller' ? 'بائع' : 'مشتري'}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {req.wallet?.user?.email || 'بدون بريد'}
+                          {req.withdrawalPhone ? ` · رقم المحفظة: ${req.withdrawalPhone}` : ''}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(req.createdAt).toLocaleString('ar-EG')}
+                        </p>
+                        {req.reviewNote ? (
+                          <p className="text-xs text-muted-foreground mt-1">ملاحظة: {req.reviewNote}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <p className="text-sm font-bold text-red-600">
+                          {Math.abs(Number(req.amount || 0)).toFixed(2)} ج.م
+                        </p>
+                        {status === 'pending' ? (
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-500 text-white"
+                              onClick={() => reviewWithdrawal(req.id, 'approved')}
+                              disabled={reviewingWithdrawId === req.id}
+                            >
+                              <CheckCircle2 size={14} className="ml-1" />
+                              تم التنفيذ
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => reviewWithdrawal(req.id, 'rejected')}
+                              disabled={reviewingWithdrawId === req.id}
+                            >
+                              <XCircle size={14} className="ml-1" />
+                              لم يتم
+                            </Button>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
 
         {/* عرض المعاملات */}
         {txUser ? (

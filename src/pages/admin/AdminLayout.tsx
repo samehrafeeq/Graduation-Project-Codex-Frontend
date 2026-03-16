@@ -16,6 +16,9 @@ import {
   Settings,
   ChevronLeft,
   Home,
+  LifeBuoy,
+  HandPlatter,
+  CreditCard,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -39,6 +42,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     { label: 'واتساب', href: '/admin/whatsapp', icon: MessageCircle },
     { label: 'المحادثات', href: '/admin/chat', icon: MessageSquare },
     { label: 'الأرصدة', href: '/admin/wallet', icon: Wallet },
+    { label: 'طرق الدفع', href: '/admin/payment-methods', icon: CreditCard },
+    { label: 'تذاكر الدعم', href: '/admin/support', icon: LifeBuoy },
+    { label: 'خدمات غير موجودة', href: '/admin/missing-services', icon: HandPlatter },
     { label: 'الإعدادات', href: '/admin/settings', icon: Settings },
   ];
 

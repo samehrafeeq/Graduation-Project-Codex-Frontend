@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { servicesApi, categoriesApi } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, Save, Info } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, Save, Info, Sparkles, RefreshCw } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000';
 
@@ -18,6 +18,95 @@ interface ExtraItem {
   price: number;
   extraDeliveryDays: number;
 }
+
+const normalizeSpaces = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+const toTitleCaseEn = (value: string) =>
+  value
+    .split(' ')
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : word))
+    .join(' ');
+
+const generateServiceTitleSuggestions = (
+  rawTitle: string,
+  categoryName: string,
+  variationOffset = 0,
+): string[] => {
+  const base = normalizeSpaces(rawTitle);
+  if (!base || base.length < 4) return [];
+
+  const isArabic = /[\u0600-\u06FF]/.test(base);
+  const safeCategory = normalizeSpaces(categoryName || '');
+  const categoryPrefix = safeCategory ? (isArabic ? `في ${safeCategory}` : `for ${safeCategory}`) : '';
+
+  const baseTitle = isArabic ? base : toTitleCaseEn(base);
+
+  const variants = isArabic
+    ? [
+        `${baseTitle} باحترافية وجودة عالية`,
+        `${baseTitle} بأسلوب احترافي ونتائج مميزة`,
+        `خدمة ${baseTitle} مع دعم كامل`,
+        `${baseTitle} مع تعديلات مجانية`,
+        `${baseTitle} بسرعة ودقة ${categoryPrefix}`.trim(),
+        `${baseTitle} بجودة ممتازة وتفاصيل دقيقة`,
+        `${baseTitle} بنتيجة احترافية مضمونة`,
+        `${baseTitle} وفق أفضل ممارسات المجال`,
+      ]
+    : [
+        `${baseTitle} with Professional Quality`,
+        `Premium ${baseTitle} for Better Results`,
+        `${baseTitle} with Full Support`,
+        `${baseTitle} with Free Revisions`,
+        `Fast and Accurate ${baseTitle} ${categoryPrefix}`.trim(),
+        `${baseTitle} with Outstanding Quality`,
+        `${baseTitle} with a Professional Finish`,
+        `${baseTitle} Based on Best Practices`,
+      ];
+
+  const rotated = variants
+    .map((_, index, arr) => arr[(index + variationOffset) % arr.length]);
+
+  const cleaned = rotated
+    .map(normalizeSpaces)
+    .filter((item) => item.length >= 10 && item.length <= 80);
+
+  return Array.from(new Set(cleaned)).filter((item) => item.toLowerCase() !== base.toLowerCase()).slice(0, 6);
+};
+
+const generateServiceDescriptionSuggestions = (
+  rawTitle: string,
+  categoryName: string,
+  price: number | '',
+  deliveryDays: number,
+  variationOffset = 0,
+): string[] => {
+  const title = normalizeSpaces(rawTitle);
+  if (!title || title.length < 4) return [];
+
+  const isArabic = /[\u0600-\u06FF]/.test(title);
+  const category = normalizeSpaces(categoryName || 'الخدمات الرقمية');
+  const priceText = Number(price) > 0 ? `${price}` : isArabic ? 'حسب المتطلبات' : 'based on requirements';
+  const deliveryText = Math.max(1, Number(deliveryDays) || 1);
+
+  const arTemplates = [
+    `أقدم خدمة ${title} بجودة احترافية تناسب احتياجاتك في مجال ${category}.\n\nماذا ستحصل عليه:\n- تنفيذ دقيق ومتقن\n- تواصل مستمر حتى التسليم\n- مراجعات لتحسين النتيجة النهائية\n\nسعر الخدمة يبدأ من ${priceText} ج.م، ومدة التنفيذ المتوقعة ${deliveryText} أيام.`,
+    `إذا كنت تبحث عن ${title} بشكل احترافي، فهذه الخدمة مصممة لتمنحك نتيجة عملية وواضحة في ${category}.\n\nيشمل العمل:\n- فهم المتطلبات قبل البدء\n- تنفيذ بمعايير جودة عالية\n- دعم بعد التسليم لضمان رضاك\n\nالسعر يبدأ من ${priceText} ج.م مع تنفيذ خلال ${deliveryText} أيام.`,
+    `خدمة ${title} موجهة للأفراد والشركات الراغبين في نتائج قوية ضمن ${category}.\n\nمميزات الخدمة:\n- جودة ثابتة واهتمام بالتفاصيل\n- التزام كامل بالاتفاق\n- مرونة في التعديلات عند الحاجة\n\nالبدء من ${priceText} ج.م والتسليم خلال ${deliveryText} أيام تقريبًا.`,
+    `مع خدمة ${title} ستحصل على تنفيذ احترافي يساعدك على تحقيق هدفك بسرعة ووضوح في ${category}.\n\nما يميزني:\n- خبرة عملية في التنفيذ\n- وضوح في خطوات العمل\n- تسليم منظم وقابل للاستخدام مباشرة\n\nالسعر الابتدائي ${priceText} ج.م ومدة التنفيذ ${deliveryText} أيام.`,
+  ];
+
+  const enTemplates = [
+    `I provide ${title} with professional quality tailored to your needs in ${category}.\n\nWhat you get:\n- Accurate and polished execution\n- Consistent communication\n- Revisions to refine the final result\n\nStarting price: ${priceText}. Estimated delivery: ${deliveryText} days.`,
+    `If you need ${title} done professionally, this service is built to deliver clear and practical results in ${category}.\n\nThis service includes:\n- Requirement analysis before starting\n- High-quality implementation\n- Post-delivery support\n\nStarting from ${priceText} with delivery in ${deliveryText} days.`,
+    `${title} service for individuals and businesses looking for strong outcomes in ${category}.\n\nKey benefits:\n- Reliable quality and attention to detail\n- Full commitment to the agreed scope\n- Flexible revisions when needed\n\nPrice starts at ${priceText} and delivery is around ${deliveryText} days.`,
+    `With ${title}, you get a professional implementation that helps you achieve your goal quickly in ${category}.\n\nWhy this service:\n- Practical experience\n- Clear workflow and milestones\n- Structured, ready-to-use delivery\n\nBase price: ${priceText}. Delivery time: ${deliveryText} days.`,
+  ];
+
+  const templates = isArabic ? arTemplates : enTemplates;
+  const rotated = templates.map((_, index, arr) => arr[(index + variationOffset) % arr.length]);
+
+  return rotated.map(normalizeSpaces).slice(0, 3);
+};
 
 const ServiceForm = () => {
   const { id } = useParams();
@@ -30,7 +119,13 @@ const ServiceForm = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [title, setTitle] = useState('');
+  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
+  const [titleGenerationCount, setTitleGenerationCount] = useState(0);
+  const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
   const [description, setDescription] = useState('');
+  const [descriptionSuggestions, setDescriptionSuggestions] = useState<string[]>([]);
+  const [descriptionGenerationCount, setDescriptionGenerationCount] = useState(0);
+  const [isGeneratingDescriptions, setIsGeneratingDescriptions] = useState(false);
   const [categoryId, setCategoryId] = useState<number | ''>('');
   const [price, setPrice] = useState<number | ''>('');
   const [deliveryDays, setDeliveryDays] = useState<number>(3);
@@ -45,6 +140,44 @@ const ServiceForm = () => {
     loadCategories();
     if (isEdit) loadService();
   }, [id]);
+
+  const handleGenerateTitleSuggestions = () => {
+    const cleanTitle = normalizeSpaces(title);
+    if (!cleanTitle || cleanTitle.length < 4) {
+      toast({ title: 'تنبيه', description: 'اكتب اسمًا مبدئيًا للخدمة أولاً (4 أحرف على الأقل)' });
+      return;
+    }
+
+    const selectedCategoryName = categories.find((c) => c.id === Number(categoryId))?.name || '';
+    const nextCount = titleGenerationCount + 1;
+    setIsGeneratingTitles(true);
+
+    setTimeout(() => {
+      setTitleSuggestions(generateServiceTitleSuggestions(cleanTitle, selectedCategoryName, nextCount));
+      setTitleGenerationCount(nextCount);
+      setIsGeneratingTitles(false);
+    }, 180);
+  };
+
+  const handleGenerateDescriptionSuggestions = () => {
+    const cleanTitle = normalizeSpaces(title);
+    if (!cleanTitle || cleanTitle.length < 4) {
+      toast({ title: 'تنبيه', description: 'اكتب اسمًا مبدئيًا للخدمة أولاً لتوليد وصف مناسب' });
+      return;
+    }
+
+    const selectedCategoryName = categories.find((c) => c.id === Number(categoryId))?.name || '';
+    const nextCount = descriptionGenerationCount + 1;
+    setIsGeneratingDescriptions(true);
+
+    setTimeout(() => {
+      setDescriptionSuggestions(
+        generateServiceDescriptionSuggestions(cleanTitle, selectedCategoryName, price, deliveryDays, nextCount),
+      );
+      setDescriptionGenerationCount(nextCount);
+      setIsGeneratingDescriptions(false);
+    }, 220);
+  };
 
   const loadCategories = async () => {
     try {
@@ -170,7 +303,33 @@ const ServiceForm = () => {
           <DataCard title="البيانات الأساسية">
             <div className="space-y-5">
               <div>
-                <Label htmlFor="title" className="text-sm font-semibold">عنوان الخدمة *</Label>
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                  <Label htmlFor="title" className="text-sm font-semibold">عنوان الخدمة *</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateTitleSuggestions}
+                      className="h-8 rounded-lg gap-1.5"
+                    >
+                      <Sparkles size={14} />
+                      توليد أسماء بخدماتي AI
+                    </Button>
+                    {titleSuggestions.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleGenerateTitleSuggestions}
+                        className="h-8 rounded-lg gap-1.5"
+                      >
+                        <RefreshCw size={14} className={isGeneratingTitles ? 'animate-spin' : ''} />
+                        إعادة التوليد
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 <Input
                   id="title"
                   value={title}
@@ -178,6 +337,26 @@ const ServiceForm = () => {
                   placeholder="مثال: تصميم شعار احترافي"
                   className="mt-1.5 h-11 rounded-xl bg-muted/30 focus:bg-white"
                 />
+                {titleSuggestions.length > 0 && (
+                  <div className="mt-3 rounded-xl border border-border/70 bg-muted/20 p-3">
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">اقتراحات لتحسين اسم الخدمة:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {titleSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          onClick={() => setTitle(suggestion)}
+                          className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-xs text-primary transition-colors hover:bg-primary/10"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  لن يتم توليد الأسماء تلقائيًا. اضغط زر التوليد عند الحاجة، ولا تضع مدة التسليم في اسم الخدمة.
+                </p>
               </div>
 
               <div>
@@ -194,7 +373,33 @@ const ServiceForm = () => {
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-sm font-semibold">وصف الخدمة *</Label>
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                  <Label htmlFor="description" className="text-sm font-semibold">وصف الخدمة *</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateDescriptionSuggestions}
+                      className="h-8 rounded-lg gap-1.5"
+                    >
+                      <Sparkles size={14} />
+                      توليد وصف بخدماتي AI
+                    </Button>
+                    {descriptionSuggestions.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleGenerateDescriptionSuggestions}
+                        className="h-8 rounded-lg gap-1.5"
+                      >
+                        <RefreshCw size={14} className={isGeneratingDescriptions ? 'animate-spin' : ''} />
+                        إعادة التوليد
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 <Textarea
                   id="description"
                   value={description}
@@ -202,6 +407,27 @@ const ServiceForm = () => {
                   placeholder="اكتب وصفاً تفصيلياً يوضح ما ستقدمه..."
                   className="mt-1.5 min-h-[130px] rounded-xl bg-muted/30 focus:bg-white resize-none"
                 />
+                {descriptionSuggestions.length > 0 && (
+                  <div className="mt-3 space-y-2 rounded-xl border border-border/70 bg-muted/20 p-3">
+                    <p className="text-xs font-semibold text-muted-foreground">وصف مقترح بالتوليد:</p>
+                    {descriptionSuggestions.map((suggestion) => (
+                      <div key={suggestion} className="rounded-lg border border-border/70 bg-background p-3">
+                        <p className="text-xs leading-6 text-foreground/90 whitespace-pre-line">{suggestion}</p>
+                        <div className="mt-2 flex justify-end">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setDescription(suggestion)}
+                            className="h-7 rounded-md text-xs"
+                          >
+                            استخدام هذا الوصف
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Image upload */}

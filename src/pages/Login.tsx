@@ -8,6 +8,8 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUiPreferences } from "@/contexts/UiPreferencesContext";
+import ThemeLanguageSwitcher from "@/components/ThemeLanguageSwitcher";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +19,24 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { isArabic } = useUiPreferences();
+
+  const text = {
+    title: isArabic ? 'تسجيل الدخول' : 'Login',
+    subtitle: isArabic ? 'أدخل بياناتك للوصول إلى حسابك' : 'Enter your details to access your account',
+    invalidCredentials: isArabic ? 'بيانات الدخول غير صحيحة' : 'Invalid login credentials',
+    email: isArabic ? 'البريد الإلكتروني' : 'Email',
+    emailPlaceholder: isArabic ? 'أدخل بريدك الإلكتروني' : 'Enter your email',
+    password: isArabic ? 'كلمة المرور' : 'Password',
+    passwordPlaceholder: isArabic ? 'أدخل كلمة المرور' : 'Enter your password',
+    forgot: isArabic ? 'نسيت كلمة المرور؟' : 'Forgot password?',
+    remember: isArabic ? 'تذكرني' : 'Remember me',
+    login: isArabic ? 'تسجيل الدخول' : 'Login',
+    or: isArabic ? 'أو' : 'or',
+    noAccount: isArabic ? 'ليس لديك حساب؟' : "Don't have an account?",
+    create: isArabic ? 'إنشاء حساب جديد' : 'Create a new account',
+    backHome: isArabic ? 'العودة للرئيسية' : 'Back to home',
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +46,14 @@ const Login = () => {
       await login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'بيانات الدخول غير صحيحة');
+      setError(err.response?.data?.message || text.invalidCredentials);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-50/50">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-muted/30">
       {/* Background gradients */}
       <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[0%] right-[0%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[100px] pointer-events-none" />
@@ -44,12 +64,15 @@ const Login = () => {
           <Link to="/" className="inline-flex items-center mb-6">
              <Logo iconClassName="w-12 h-12" textClassName="text-3xl" />
           </Link>
-          <h1 className="text-2xl font-bold text-foreground mb-2">تسجيل الدخول</h1>
-          <p className="text-sm text-gray-500">أدخل بياناتك للوصول إلى حسابك</p>
+          <div className="flex justify-center mb-4">
+            <ThemeLanguageSwitcher compact />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{text.title}</h1>
+          <p className="text-sm text-muted-foreground">{text.subtitle}</p>
         </div>
 
         {/* Form Card */}
-        <Card className="border-0 shadow-2xl shadow-black/5 bg-white/80 backdrop-blur-xl rounded-2xl overflow-hidden">
+        <Card className="border-0 shadow-2xl shadow-black/5 bg-card/80 backdrop-blur-xl rounded-2xl overflow-hidden">
           <CardContent className="p-8">
             <form className="space-y-5" onSubmit={handleSubmit}>
               {error && (
@@ -59,18 +82,18 @@ const Login = () => {
               )}
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
-                  البريد الإلكتروني
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  {text.email}
                 </Label>
                 <div className="relative group">
-                  <Mail className="absolute top-1/2 right-3.5 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
+                  <Mail className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="أدخل بريدك الإلكتروني"
-                    className="pr-10 h-12 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary transition-all rounded-xl"
+                    placeholder={text.emailPlaceholder}
+                    className="pr-10 h-12 bg-background border-input focus:bg-background focus:border-primary transition-all rounded-xl"
                     required
                   />
                 </div>
@@ -79,28 +102,28 @@ const Login = () => {
               {/* Password */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
-                    كلمة المرور
+                  <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                    {text.password}
                   </Label>
                   <a href="#" className="text-xs text-[#7c3aed] hover:text-[#6d28d9] hover:underline font-medium transition-colors">
-                    نسيت كلمة المرور؟
+                    {text.forgot}
                   </a>
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute top-1/2 right-3.5 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
+                  <Lock className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="أدخل كلمة المرور"
-                    className="pr-10 pl-10 h-12 bg-gray-50 border-gray-200 focus:bg-white focus:border-primary transition-all rounded-xl"
+                    placeholder={text.passwordPlaceholder}
+                    className="pr-10 pl-10 h-12 bg-background border-input focus:bg-background focus:border-primary transition-all rounded-xl"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -110,8 +133,8 @@ const Login = () => {
               {/* Remember me */}
               <div className="flex items-center gap-2">
                 <Checkbox id="remember" className="rounded-[4px] border-gray-300 data-[state=checked]:bg-[#7c3aed] data-[state=checked]:border-[#7c3aed]" />
-                <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer select-none">
-                  تذكرني
+                <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer select-none">
+                  {text.remember}
                 </label>
               </div>
 
@@ -125,7 +148,7 @@ const Login = () => {
                   <Loader2 className="animate-spin" size={20} />
                 ) : (
                   <>
-                    تسجيل الدخول
+                    {text.login}
                     <ArrowLeft size={18} className="mr-2" />
                   </>
                 )}
@@ -134,10 +157,10 @@ const Login = () => {
               {/* Divider */}
               <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-100" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-white px-3 text-gray-400">أو</span>
+                  <span className="bg-card px-3 text-muted-foreground">{text.or}</span>
                 </div>
               </div>
 
@@ -162,10 +185,10 @@ const Login = () => {
             </form>
 
             {/* Register link */}
-            <p className="text-center text-sm text-gray-500 mt-8">
-              ليس لديك حساب؟{" "}
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              {text.noAccount}{" "}
               <Link to="/register" className="text-[#7c3aed] font-bold hover:underline transition-all">
-                إنشاء حساب جديد
+                {text.create}
               </Link>
             </p>
           </CardContent>
@@ -173,9 +196,9 @@ const Login = () => {
 
         {/* Back to home */}
         <div className="text-center mt-8">
-          <Link to="/" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center gap-2 group">
+          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group">
             <ArrowLeft size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
-            العودة للرئيسية
+            {text.backHome}
           </Link>
         </div>
       </div>

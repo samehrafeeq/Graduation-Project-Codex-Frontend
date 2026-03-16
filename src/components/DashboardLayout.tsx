@@ -17,6 +17,8 @@ import {
   Search,
   MessageSquare,
   Heart,
+  LifeBuoy,
+  HandPlatter,
 } from 'lucide-react';
 import { useState } from 'react';
 import NotificationBell from '@/components/NotificationBell';
@@ -39,6 +41,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const mainNav = [
     { label: 'الرئيسية', href: '/dashboard', icon: LayoutDashboard },
     { label: 'المحادثات', href: '/dashboard/chat', icon: MessageSquare },
+    { label: 'خدمات غير موجودة', href: '/dashboard/missing-services', icon: HandPlatter },
+    { label: 'الدعم الفني', href: '/dashboard/support', icon: LifeBuoy },
     { label: 'حسابي', href: '/dashboard/profile', icon: User },
   ];
 

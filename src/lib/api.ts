@@ -182,7 +182,20 @@ export const reviewsApi = {
 export const walletApi = {
   getMyWallet: () => api.get('/wallet'),
   getMyTransactions: () => api.get('/wallet/transactions'),
-  requestWithdrawal: (data: { amount: number }) => api.post('/wallet/withdraw', data),
+  requestWithdrawal: (data: { amount: number; phoneNumber: string }) => api.post('/wallet/withdraw', data),
+  getPaymentMethods: () => api.get('/wallet/payment-methods'),
+  createTopupRequest: (data: { paymentMethodId: number; amount: number; screenshot?: File | null }) => {
+    const formData = new FormData();
+    formData.append('paymentMethodId', String(data.paymentMethodId));
+    formData.append('amount', String(data.amount));
+    if (data.screenshot) {
+      formData.append('screenshot', data.screenshot);
+    }
+    return api.post('/wallet/topup-requests', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  getMyTopupRequests: () => api.get('/wallet/topup-requests/my'),
   getAdminStats: () => api.get('/wallet/admin/stats'),
   adminGetAll: () => api.get('/wallet/admin/all'),
   adminGetUserWallet: (userId: number) => api.get(`/wallet/admin/user/${userId}`),
@@ -191,6 +204,28 @@ export const walletApi = {
     api.post('/wallet/admin/deposit', data),
   adminDeduct: (data: { userId: number; amount: number; description?: string }) =>
     api.post('/wallet/admin/deduct', data),
+  adminGetPaymentMethods: () => api.get('/wallet/admin/payment-methods'),
+  adminCreatePaymentMethod: (data: {
+    name: string;
+    type: string;
+    accountNumber: string;
+    isActive?: boolean;
+  }) => api.post('/wallet/admin/payment-methods', data),
+  adminUpdatePaymentMethod: (id: number, data: {
+    name?: string;
+    type?: string;
+    accountNumber?: string;
+    isActive?: boolean;
+  }) => api.patch(`/wallet/admin/payment-methods/${id}`, data),
+  adminDeletePaymentMethod: (id: number) => api.delete(`/wallet/admin/payment-methods/${id}`),
+  adminGetTopupRequests: (params?: { status?: 'pending' | 'approved' | 'rejected' }) =>
+    api.get('/wallet/admin/topup-requests', { params }),
+  adminReviewTopupRequest: (id: number, data: { status: 'approved' | 'rejected'; reviewNote?: string }) =>
+    api.patch(`/wallet/admin/topup-requests/${id}/review`, data),
+  adminGetWithdrawalRequests: (params?: { status?: 'pending' | 'approved' | 'rejected' }) =>
+    api.get('/wallet/admin/withdrawal-requests', { params }),
+  adminReviewWithdrawalRequest: (id: number, data: { status: 'approved' | 'rejected'; reviewNote?: string }) =>
+    api.patch(`/wallet/admin/withdrawal-requests/${id}/review`, data),
 };
 
 // ===== Settings API =====
@@ -229,6 +264,52 @@ export const favoritesApi = {
   check: (serviceId: number) => api.get(`/favorites/check/${serviceId}`),
   checkMany: (serviceIds: number[]) =>
     api.post('/favorites/check-many', { serviceIds }),
+};
+
+// ===== Support Tickets API =====
+export const supportTicketsApi = {
+  create: (data: { title: string; isIssue: boolean; issueType: string; description?: string }) =>
+    api.post('/support-tickets', data),
+  getMy: () => api.get('/support-tickets/my'),
+  getOne: (ticketId: number) => api.get(`/support-tickets/${ticketId}`),
+  addReply: (ticketId: number, data: { message: string; image?: File | null }) => {
+    const formData = new FormData();
+    formData.append('message', data.message);
+    if (data.image) {
+      formData.append('image', data.image);
+    }
+    return api.post(`/support-tickets/${ticketId}/replies`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  adminGetAll: (params?: { status?: string }) =>
+    api.get('/support-tickets/admin/all', { params }),
+  adminUpdateStatus: (ticketId: number, data: { status: string; adminResponse?: string }) =>
+    api.patch(`/support-tickets/admin/${ticketId}/status`, data),
+};
+
+// ===== AI Support API =====
+export const aiSupportApi = {
+  chat: (data: {
+    message: string;
+    history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  }) => api.post('/ai-support/chat', data),
+};
+
+// ===== Missing Service Requests API =====
+export const missingServiceRequestsApi = {
+  create: (data: { title: string; description: string; averageBudget: number }) =>
+    api.post('/missing-service-requests', data),
+  getAll: (params?: { foundStatus?: 'pending' | 'found' | 'not_found' }) =>
+    api.get('/missing-service-requests', { params }),
+  getOne: (requestId: number) => api.get(`/missing-service-requests/${requestId}`),
+  getMy: () => api.get('/missing-service-requests/my'),
+  addSellerComment: (requestId: number, data: { comment: string }) =>
+    api.post(`/missing-service-requests/${requestId}/comments`, data),
+  updateFoundStatus: (requestId: number, data: { foundStatus: 'pending' | 'found' | 'not_found' }) =>
+    api.patch(`/missing-service-requests/${requestId}/found-status`, data),
+  adminGetAll: (params?: { foundStatus?: 'pending' | 'found' | 'not_found' }) =>
+    api.get('/missing-service-requests/admin/all', { params }),
 };
 
 export default api;

@@ -1,30 +1,56 @@
 import { Star } from "lucide-react";
-
-const testimonials = [
-  {
-    name: "أحمد محمد",
-    role: "مطور ويب",
-    content: "منصة رائعة ساعدتني في الحصول على عملاء جدد وزيادة دخلي بشكل ملحوظ. الدعم الفني ممتاز والتعامل سلس جداً.",
-    rating: 5,
-    initials: "أم",
-  },
-  {
-    name: "سارة العلي",
-    role: "مصممة جرافيك",
-    content: "أفضل منصة عربية للخدمات المصغرة. واجهة سهلة الاستخدام ونظام دفع آمن. أنصح بها بشدة لكل مستقل.",
-    rating: 5,
-    initials: "سع",
-  },
-];
+import { useUiPreferences } from "@/contexts/UiPreferencesContext";
 
 const TestimonialsSection = () => {
+  const { isArabic } = useUiPreferences();
+
+  const testimonials = isArabic
+    ? [
+        {
+          name: "أحمد محمد",
+          role: "مطور ويب",
+          content: "منصة رائعة ساعدتني في الحصول على عملاء جدد وزيادة دخلي بشكل ملحوظ. الدعم الفني ممتاز والتعامل سلس جداً.",
+          rating: 5,
+          initials: "أم",
+        },
+        {
+          name: "سارة العلي",
+          role: "مصممة جرافيك",
+          content: "أفضل منصة عربية للخدمات المصغرة. واجهة سهلة الاستخدام ونظام دفع آمن. أنصح بها بشدة لكل مستقل.",
+          rating: 5,
+          initials: "سع",
+        },
+      ]
+    : [
+        {
+          name: "Ahmed Mohamed",
+          role: "Web Developer",
+          content: "An excellent platform that helped me attract new clients and grow my income significantly. Great support and smooth workflow.",
+          rating: 5,
+          initials: "AM",
+        },
+        {
+          name: "Sarah Ali",
+          role: "Graphic Designer",
+          content: "The best regional microservices marketplace. Easy interface, secure payments, and a professional experience.",
+          rating: 5,
+          initials: "SA",
+        },
+      ];
+
+  const text = {
+    badge: isArabic ? 'آراء المستخدمين' : 'Testimonials',
+    title: isArabic ? 'ماذا يقول مستخدمونا؟' : 'What Our Users Say',
+    description: isArabic ? 'تجارب حقيقية من مستخدمين راضين' : 'Real stories from satisfied users',
+  };
+
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
-          <span className="text-sm font-medium text-primary bg-accent rounded-full px-4 py-1.5 inline-block mb-4">آراء المستخدمين</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">ماذا يقول مستخدمونا؟</h2>
-          <p className="text-muted-foreground">تجارب حقيقية من مستخدمين راضين</p>
+          <span className="text-sm font-medium text-primary bg-accent rounded-full px-4 py-1.5 inline-block mb-4">{text.badge}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{text.title}</h2>
+          <p className="text-muted-foreground">{text.description}</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">

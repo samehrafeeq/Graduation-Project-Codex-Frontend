@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { notificationsApi } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bell, Check, ShoppingCart, MessageSquare, Star, ArrowLeft } from 'lucide-react';
 
 const iconMap: Record<string, any> = {
@@ -15,7 +16,6 @@ const NotificationBell = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   const fetchNotifs = () => {
     notificationsApi.getAll().then((r) => setNotifications(r.data)).catch(() => {});
@@ -34,17 +34,6 @@ const NotificationBell = () => {
       socket.on('notification', handler);
       return () => { socket.off('notification', handler); };
     }
-  }, []);
-
-  // Close on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   const handleMarkAllRead = async () => {
@@ -70,21 +59,27 @@ const NotificationBell = () => {
   };
 
   return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="relative rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition"
-      >
-        <Bell size={18} />
-        {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className="relative rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition"
+        >
+          <Bell size={18} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </button>
+      </PopoverTrigger>
 
-      {open && (
-        <div className="absolute left-0 sm:right-0 sm:left-auto top-full mt-2 w-80 bg-white rounded-2xl shadow-xl shadow-black/10 ring-1 ring-black/[0.06] z-50 overflow-hidden">
+      <PopoverContent
+        align="start"
+        side="bottom"
+        sideOffset={8}
+        collisionPadding={8}
+        className="w-[min(20rem,calc(100vw-1rem))] p-0 bg-white rounded-2xl shadow-xl shadow-black/10 ring-1 ring-black/[0.06] overflow-hidden"
+      >
           <div className="flex items-center justify-between p-3 border-b border-border/40">
             <h4 className="font-bold text-sm">الإشعارات</h4>
             {unreadCount > 0 && (
@@ -146,9 +141,8 @@ const NotificationBell = () => {
               })
             )}
           </div>
-        </div>
-      )}
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

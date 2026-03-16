@@ -1,12 +1,30 @@
 import { Sparkles, ShieldAlert, BarChart3 } from "lucide-react";
-
-const points = [
-  { icon: Sparkles, title: "توصية الخدمات", description: "نظام ذكي يقترح عليك أفضل الخدمات بناءً على احتياجاتك" },
-  { icon: ShieldAlert, title: "كشف الاحتيال", description: "حماية متقدمة تكتشف المعاملات المشبوهة تلقائياً" },
-  { icon: BarChart3, title: "تحسين جودة الخدمات", description: "تحليل مستمر لضمان أعلى مستويات الجودة" },
-];
+import { useUiPreferences } from "@/contexts/UiPreferencesContext";
 
 const AISection = () => {
+  const { isArabic } = useUiPreferences();
+
+  const points = isArabic
+    ? [
+        { icon: Sparkles, title: "توصية الخدمات", description: "نظام ذكي يقترح عليك أفضل الخدمات بناءً على احتياجاتك" },
+        { icon: ShieldAlert, title: "كشف الاحتيال", description: "حماية متقدمة تكتشف المعاملات المشبوهة تلقائياً" },
+        { icon: BarChart3, title: "تحسين جودة الخدمات", description: "تحليل مستمر لضمان أعلى مستويات الجودة" },
+      ]
+    : [
+        { icon: Sparkles, title: "Smart Recommendations", description: "An intelligent engine suggests the best services for your needs" },
+        { icon: ShieldAlert, title: "Fraud Detection", description: "Advanced protection that flags suspicious activity automatically" },
+        { icon: BarChart3, title: "Quality Optimization", description: "Continuous analysis to ensure high service quality" },
+      ];
+
+  const text = {
+    badge: isArabic ? 'تقنيات متقدمة' : 'Advanced Technology',
+    title: isArabic ? 'ذكاء اصطناعي يجعل تجربتك' : 'AI that makes your experience',
+    titleAccent: isArabic ? 'أفضل' : 'better',
+    description: isArabic
+      ? 'نستخدم أحدث تقنيات الذكاء الاصطناعي لتوفير تجربة فريدة ومخصصة لكل مستخدم. احصل على توصيات دقيقة وحماية متقدمة.'
+      : 'We use modern AI to deliver a personalized experience for each user with better recommendations and stronger protection.',
+  };
+
   return (
     <section className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#6d28d9] to-secondary" />
@@ -15,17 +33,17 @@ const AISection = () => {
       <div className="container mx-auto px-4 relative">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="text-sm font-medium text-white/90 bg-white/20 border border-white/20 rounded-full px-4 py-1.5 inline-block mb-4">تقنيات متقدمة</span>
+            <span className="text-sm font-medium text-white/90 bg-white/20 border border-white/20 rounded-full px-4 py-1.5 inline-block mb-4">{text.badge}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              ذكاء اصطناعي يجعل تجربتك{" "}
+              {text.title}{" "}
               <span className="text-yellow-300 relative inline-block">
-                أفضل
+                {text.titleAccent}
                 <svg className="absolute w-full h-2 bottom-0 left-0 text-yellow-300/50" viewBox="0 0 100 10" preserveAspectRatio="none">
                   <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
                 </svg>
               </span>
             </h2>
-            <p className="text-indigo-100 mb-8 text-lg leading-relaxed">نستخدم أحدث تقنيات الذكاء الاصطناعي لتوفير تجربة فريدة ومخصصة لكل مستخدم. احصل على توصيات دقيقة وحماية متقدمة.</p>
+            <p className="text-indigo-100 mb-8 text-lg leading-relaxed">{text.description}</p>
 
             <div className="space-y-6">
               {points.map((p, i) => (
